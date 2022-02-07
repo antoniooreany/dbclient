@@ -1,6 +1,7 @@
 package com.gorshkov.dbclient;
 
 import java.sql.*;
+import java.util.Scanner;
 
 public class Client {
 
@@ -10,13 +11,28 @@ public class Client {
     private final static String SQL_SELECT_FROM = "SELECT * FROM test_db.test_table";
 
     public void start() throws SQLException {
+        String userInput = getUserInput();
+
         try (Connection connection = DriverManager.getConnection(
                 DEFAULT_URL, DEFAULT_USER, DEFAULT_PASSWORD);) {
             Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(SQL_SELECT_FROM);
-            while (resultSet.next())
-                System.out.println(resultSet.getInt(1) + "  "
-                        + resultSet.getString(2));
+            ResultSet resultSet = statement.executeQuery(userInput);
+            writeResultToConsole(resultSet);
         }
+    }
+
+    private String getUserInput() {
+        Scanner scanner = new Scanner(System.in);
+        StringBuilder line = new StringBuilder();
+        while (scanner.hasNext()) {
+            line.append(scanner.nextLine());
+        }
+        return line.toString();
+    }
+
+    private void writeResultToConsole(ResultSet resultSet) throws SQLException {
+        while (resultSet.next())
+            System.out.println(resultSet.getInt(1) + "  "
+                    + resultSet.getString(2));
     }
 }
