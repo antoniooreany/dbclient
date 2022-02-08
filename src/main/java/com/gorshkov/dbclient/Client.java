@@ -15,7 +15,7 @@ public class Client {
     private final static String SQL_SELECT_FROM_BOOKS = "SELECT * FROM test_db.books;";
     private final static String SQL_SELECT_FROM_WHERE = "SELECT * FROM test_db.test_table WHERE id > 2;";
     private final static String SQL_UPDATE_WHERE = "UPDATE test_db.test_table SET name='Juan' WHERE id=3;";
-    private final static String FILE_PATH = "C:/Users/GAS_Dell_XPS9310/IdeaProjects/krtkabna/dbclient/src/main/resources/report1.html";
+    private final static String FILE_PATH = "C:/Users/GAS_Dell_XPS9310/IdeaProjects/dbclient/src/main/resources/report1.html";
 
     public void start() throws SQLException, IOException {
 //        String userInput = getUserInput();
@@ -51,22 +51,23 @@ public class Client {
         StringBuilder builder = new StringBuilder("<table>\n");
 
         String[] columnNames = getColumnNames(resultSet);
-        String headers = getHeadersToHtml(columnCount, columnNames);
+        StringBuilder headers = getHeadersToHtml(columnCount, columnNames);
 
         builder.append(headers);
 
+        getDataToHtml(resultSet, columnCount, builder);
+
+        builder.append("</table>");
+        writeToFile(builder);
+    }
+
+    private void getDataToHtml(ResultSet resultSet, int columnCount, StringBuilder builder) throws SQLException {
         while (resultSet.next()) {
             builder.append("  <tr>\n");
             for (int i = 0; i < columnCount; i++) {
                 builder.append("    <td>" + resultSet.getString(i + 1) + "</td>\n");
             }
         }
-
-        builder.append("</table>");
-
-//        System.out.println(builder);
-
-        writeToFile(builder);
     }
 
     private void writeToFile(StringBuilder builder) throws IOException {
@@ -75,15 +76,15 @@ public class Client {
         }
     }
 
-    private String getHeadersToHtml(int columnCount, String[] columnNames) {
-        StringBuilder result = new StringBuilder("  <tr>\n");
+    private StringBuilder getHeadersToHtml(int columnCount, String[] columnNames) {
+        StringBuilder builder = new StringBuilder("  <tr>\n");
         for (int i = 0; i < columnCount; i++) {
-            result
+            builder
                     .append("    <th>")
                     .append(columnNames[i])
                     .append("</th>\n");
         }
-        return result.toString();
+        return builder;
     }
 
     private String[] getColumnNames(ResultSet resultSet) throws SQLException {
